@@ -1,0 +1,126 @@
+asyncapi: 3.0.0
+info:
+  title: DHT22 Temperature and Humidity Sensor MQTT API
+  version: 1.0.0
+  description: >-
+    The DHT22 Sensor API allows you to remotely receive temperature and humidity
+    measurements of DHT22 sensors.
+
+    ### Operations:
+
+    * Receive real-time temperature and humidity measurements 📈
+defaultContentType: application/json
+servers:
+  mqttBroker:
+    host: localhost:1883
+    protocol: mqtt
+    description: The MQTT broker to which measurement data are published and consumed.
+    security:
+      - $ref: '#/components/securitySchemes/basicAuth'
+channels:
+  temperatureMeasured:
+    address: esp32/dht/temperature
+    messages:
+      temperatureMeasurement:
+        $ref: '#/components/messages/temperatureMeasurement'
+    description: >-
+      The topic on which measured temperature values may be produced and
+      consumed.
+    parameters:
+      sensorId:
+        $ref: '#/components/parameters/sensorId'
+    bindings:
+      mqtt:
+        qos: 1
+        retain: false
+  humidityMeasured:
+    address: esp32/dht/humidity
+    messages:
+      humidityMeasurement:
+        $ref: '#/components/messages/humidityMeasurement'
+    description: The topic on which measured humid values may be produced and consumed.
+    parameters:
+      sensorId:
+        $ref: '#/components/parameters/sensorId'
+    bindings:
+      mqtt:
+        qos: 1
+        retain: false
+operations:
+  receiveHumidityMeasurement:
+    tags:
+      - name: Properties
+        description: An operation for retrieving measurements of a Thing property
+    action: receive
+    channel:
+      $ref: '#/channels/humidityMeasured'
+    summary: Inform about environmental humidity conditions of a particular room.
+    messages:
+      - $ref: '#/channels/humidityMeasured/messages/humidityMeasurement'
+  receiveTemperatureMeasurement:
+    tags:
+      - name: Properties
+        description: An operation for retrieving measurements of a Thing property
+    action: receive
+    channel:
+      $ref: '#/channels/temperatureMeasured'
+    summary: Inform about environmental temperature conditions of a particular room.
+    messages:
+      - $ref: '#/channels/temperatureMeasured/messages/temperatureMeasurement'
+components:
+  messages:
+    temperatureMeasurement:
+      name: temperatureMeasurement
+      title: Temperature measured
+      summary: Inform about environmental temperature conditions of a room.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/temperatureMeasuredPayload'
+    humidityMeasurement:
+      name: humidityMeasurement
+      title: Humidity measured
+      summary: Inform about environmental humidity conditions of a room.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/humidityMeasuredPayload'
+  schemas:
+    temperatureMeasuredPayload:
+      type: object
+      properties:
+        temp:
+          type: number
+          minimum: -40
+          maximum: 80
+          description: The temperature value in degrees Celsius.
+          example: 20.5
+        sentAt:
+          $ref: '#/components/schemas/sentAt'
+      example:
+        temp: 20.5
+        sentAt: '2025-03-09T12:00:00Z'
+    humidityMeasuredPayload:
+      type: object
+      properties:
+        humidity:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: The humidity percentage value.
+          example: 60.2
+        sentAt:
+          $ref: '#/components/schemas/sentAt'
+      example:
+        humidity: 60.2
+        sentAt: '2025-03-09T12:00:00Z'
+    sentAt:
+      type: string
+      format: date-time
+      description: Date and time when the message was sent.
+      example: '2025-03-09T12:00:00Z'
+  securitySchemes:
+    basicAuth:
+      type: userPassword
+      description: Basic authentication with username and password.
+  parameters:
+    sensorId:
+      description: The ID of the sensor.
