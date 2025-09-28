@@ -1,0 +1,220 @@
+{
+    "asyncapi": "3.0.0",
+    "info": {
+        "title": "PanasonicAirConditionerP1",
+        "version": "1.0"
+    },
+    "servers": {
+        "base": {
+            "host": "w3c.p-wot.com",
+            "protocol": "mqtt",
+            "pathname": "/wot-ver2/things/airconditioner/1/",
+            "description": "",
+            "title": "",
+            "summary": "",
+            "variables": {},
+            "security": [
+                {
+                    "type": "http",
+                    "scheme": "bearer",
+                    "bearerFormat": "JWT"
+                }
+            ],
+            "bindings": {}
+        }
+    },
+    "channels": {
+        "properties_resource_channel": {
+            "messages": {
+                "operationStatus": {
+                    "$ref": "#/components/messages/operationStatus"
+                },
+                "operationMode": {
+                    "$ref": "#/components/messages/operationMode"
+                },
+                "desiredTemp": {
+                    "$ref": "#/components/messages/desiredTemp"
+                },
+                "windVolumeLevel": {
+                    "$ref": "#/components/messages/windVolumeLevel"
+                },
+                "change": {
+                    "$ref": "#/components/messages/change"
+                }
+            },
+            "servers": [
+                {
+                    "$ref": "#/servers/base"
+                }
+            ]
+        }
+    },
+    "operations": {
+        "properties_resource_operation": {
+            "messages": [
+                {
+                    "$ref": "#/channels/properties_resource_channel/messages/operationStatus"
+                },
+                {
+                    "$ref": "#/channels/properties_resource_channel/messages/operationMode"
+                },
+                {
+                    "$ref": "#/channels/properties_resource_channel/messages/desiredTemp"
+                },
+                {
+                    "$ref": "#/channels/properties_resource_channel/messages/windVolumeLevel"
+                },
+                {
+                    "$ref": "#/channels/properties_resource_channel/messages/change"
+                }
+            ],
+            "action": "receive",
+            "channel": {
+                "$ref": "#/channels/properties_resource_channel"
+            }
+        }
+    },
+    "components": {
+        "messages": {
+            "operationStatus": {
+                "headers": {
+                    "$ref": "#/components/schemas/operationStatus_headers"
+                },
+                "payload": {
+                    "$ref": "#/components/schemas/operationStatus_payload"
+                }
+            },
+            "operationMode": {
+                "headers": {
+                    "$ref": "#/components/schemas/operationMode_headers"
+                },
+                "payload": {
+                    "$ref": "#/components/schemas/operationMode_payload"
+                }
+            },
+            "desiredTemp": {
+                "headers": {
+                    "$ref": "#/components/schemas/desiredTemp_headers"
+                },
+                "payload": {
+                    "$ref": "#/components/schemas/desiredTemp_payload"
+                }
+            },
+            "windVolumeLevel": {
+                "headers": {
+                    "$ref": "#/components/schemas/windVolumeLevel_headers"
+                },
+                "payload": {
+                    "$ref": "#/components/schemas/windVolumeLevel_payload"
+                }
+            },
+            "change": {
+                "headers": {
+                    "$ref": "#/components/schemas/change_headers"
+                },
+                "payload": {
+                    "$ref": "#/components/schemas/change_payload"
+                }
+            }
+        },
+        "schemas": {
+            "change_headers": {
+                "type": "object",
+                "properties": {
+                    "contentType": {
+                        "type": "string",
+                        "const": "application/json"
+                    }
+                }
+            },
+            "change_payload": {
+                "type": "object",
+                "properties": {
+                    "operationStatus": {
+                        "type": "boolean"
+                    },
+                    "operationMode": {
+                        "type": "string",
+                        "enum": [
+                            "Auto",
+                            "Cooling",
+                            "Heating",
+                            "Dehumidifying",
+                            "Blast"
+                        ]
+                    },
+                    "desiredTemp": {
+                        "type": "number",
+                        "minimum": 16,
+                        "maximum": 30
+                    },
+                    "windVolumeLevel": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 8
+                    }
+                }
+            },
+            "windVolumeLevel_headers": {
+                "type": "object",
+                "properties": {
+                    "contentType": {
+                        "type": "string",
+                        "const": "application/json"
+                    }
+                }
+            },
+            "windVolumeLevel_payload": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 8
+            },
+            "desiredTemp_headers": {
+                "type": "object",
+                "properties": {
+                    "contentType": {
+                        "type": "string",
+                        "const": "application/json"
+                    }
+                }
+            },
+            "desiredTemp_payload": {
+                "type": "number",
+                "minimum": 16,
+                "maximum": 30
+            },
+            "operationMode_headers": {
+                "type": "object",
+                "properties": {
+                    "contentType": {
+                        "type": "string",
+                        "const": "application/json"
+                    }
+                }
+            },
+            "operationMode_payload": {
+                "type": "string",
+                "enum": [
+                    "Auto",
+                    "Cooling",
+                    "Heating",
+                    "Dehumidifying",
+                    "Blast"
+                ]
+            },
+            "operationStatus_headers": {
+                "type": "object",
+                "properties": {
+                    "contentType": {
+                        "type": "string",
+                        "const": "application/json"
+                    }
+                }
+            },
+            "operationStatus_payload": {
+                "type": "boolean"
+            }
+        }
+    },
+    "id": "urn:uuid:ed0392cc-3109-48d0-bfd2-3818e2528c78"
+}
