@@ -1,0 +1,106 @@
+{
+  "asyncapi": "3.0.0",
+  "info": {
+    "title": "IoT Sensor Monitoring API",
+    "version": "1.1.0",
+    "description": "This API describes real-time monitoring of IoT sensors over WebSockets.\nIoT devices (e.g., temperature and humidity sensors) send their readings to the server,\nand applications/dashboards can subscribe to these messages for live updates.\n"
+  },
+  "servers": {
+    "local": {
+      "host": "localhost:3000",
+      "protocol": "ws",
+      "description": "Local WebSocket server for simulation"
+    },
+    "production": {
+      "host": "example.com/ws",
+      "protocol": "wss",
+      "description": "Production WebSocket server (secure)"
+    }
+  },
+  "channels": {
+    "sensor-deviceId-readings": {
+      "address": "sensor/{deviceId}/readings",
+      "parameters": {
+        "deviceId": {
+          "description": "Unique ID of the IoT device"
+        }
+      },
+      "messages": {
+        "sensorReading.message": {
+          "$ref": "#/components/messages/sensorReading"
+        }
+      }
+    }
+  },
+  "operations": {
+    "receiveSensorReadings": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/sensor-deviceId-readings"
+      },
+      "summary": "Subscribe to real-time sensor readings from a given device",
+      "messages": [
+        {
+          "$ref": "#/channels/sensor-deviceId-readings/messages/sensorReading.message"
+        }
+      ]
+    }
+  },
+  "components": {
+    "messages": {
+      "sensorReading": {
+        "name": "sensorReading",
+        "title": "Sensor Reading",
+        "summary": "Message sent by an IoT device with sensor data",
+        "payload": {
+          "$ref": "#/components/schemas/sensorData"
+        }
+      }
+    },
+    "schemas": {
+      "sensorData": {
+        "type": "object",
+        "required": [
+          "deviceId",
+          "ts",
+          "type",
+          "value"
+        ],
+        "properties": {
+          "deviceId": {
+            "type": "string",
+            "description": "Unique identifier of the device",
+            "examples": [
+              "thermo-1",
+              "humid-1"
+            ]
+          },
+          "ts": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of the reading (ISO 8601)"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "temperature",
+              "humidity"
+            ],
+            "description": "Type of measurement",
+            "examples": [
+              "temperature"
+            ]
+          },
+          "value": {
+            "type": "number",
+            "description": "The measured value.\n- °C if type=temperature\n- % relative humidity if type=humidity\n",
+            "examples": [
+              22.5,
+              55.2
+            ]
+          }
+        }
+      }
+    }
+  }
+}
