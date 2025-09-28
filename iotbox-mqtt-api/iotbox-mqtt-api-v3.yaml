@@ -1,0 +1,55 @@
+asyncapi: 3.0.0
+info:
+  title: IoTBox monitoring
+  version: 1.0.0
+  description: Monitoring API for IoTBoxes in an automated warehouse
+servers:
+  production:
+    host: 'example.com:1883'
+    protocol: mqtt
+    description: Production MQTT broker
+channels:
+  iotbox-id-monitor:
+    address: iotbox/{id}/monitor
+    messages:
+      subscribeStatus.message:
+        $ref: '#/components/messages/statusMessage'
+    parameters:
+      id:
+        description: The ID of the IoTBox
+operations:
+  subscribeStatus:
+    action: receive
+    channel:
+      $ref: '#/channels/iotbox-id-monitor'
+    summary: Subscribes to monitoring data from IoTBoxes
+    messages:
+      - $ref: '#/channels/iotbox-id-monitor/messages/subscribeStatus.message'
+components:
+  messages:
+    statusMessage:
+      name: statusMessage
+      title: Status Message
+      summary: Message sent by IoTBoxes containing path monitoring info
+      payload:
+        $ref: '#/components/schemas/pathInfo'
+  schemas:
+    pathInfo:
+      type: object
+      properties:
+        id:
+          type: string
+        belts:
+          type: array
+          items:
+            $ref: '#/components/schemas/beltInfo'
+    beltInfo:
+      type: object
+      properties:
+        id:
+          type: string
+        ts:
+          type: string
+          format: date-time
+        speed:
+          type: number
